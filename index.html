@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Pinmook! 🎂</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Mali:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #ffe6e6;
+            background-image: radial-gradient(#ffb7b2 15%, transparent 16%), radial-gradient(#ffb7b2 15%, transparent 16%);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            color: #5a5a5a;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Music Player Styles --- */
+        .music-controls {
+            position: fixed; bottom: 20px; left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px; border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex; align-items: center; gap: 15px;
+            z-index: 2000; border: 2px solid #ff9999;
+            backdrop-filter: blur(5px); animation: slideInLeft 1s;
+        }
+        .music-btn {
+            background: none; border: none; cursor: pointer;
+            font-size: 1.5em; color: #ff6b6b; padding: 0; margin: 0;
+            transition: transform 0.2s; box-shadow: none !important; margin-top: 0 !important;
+        }
+        .music-btn:hover { transform: scale(1.2); background: none; }
+        input[type=range] {
+            -webkit-appearance: none; width: 80px; height: 5px;
+            background: #ffe6e6; border-radius: 5px; outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 15px; height: 15px;
+            border-radius: 50%; background: #ff6b6b; cursor: pointer;
+        }
+
+        @keyframes slideInLeft { from { transform: translateX(-100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* --- Page Layout --- */
+        .page {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; width: 100%; transition: opacity 0.5s ease;
+            padding: 20px 0; position: relative; z-index: 10;
+        }
+        #page-2, #page-3, #page-4 { display: none; }
+
+        h1, h2, h3 { color: #ff6b6b; text-shadow: 2px 2px 0px #fff; font-family: 'Mali', cursive; }
+        h1 { font-size: 3em; margin: 10px 0; }
+        h2 { font-size: 2.5em; margin: 20px 0; }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px; border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 90%; width: 450px;
+            position: relative; text-align: center;
+            border: 2px dashed #ff9999;
+            z-index: 20; 
+        }
+
+        /* --- Background Floating Hearts --- */
+        .bg-heart-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; pointer-events: none; z-index: 1;
+        }
+        .bg-heart {
+            position: absolute; bottom: -10%;
+            color: #ff9999; font-size: 20px; opacity: 0;
+            animation: floatUpBg linear infinite;
+        }
+        @keyframes floatUpBg {
+            0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.6; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-120vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- Elements for Page 1 --- */
+        .photo-frame {
+            width: 200px; height: 200px; background-color: #ddd;
+            border-radius: 50%; margin: 0 auto 20px; overflow: hidden;
+            border: 6px solid #ff9999; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+
+        .hearts-container { display: flex; justify-content: center; gap: 15px; margin: 10px 0 20px 0; }
+        .heart { color: #ff4757; font-size: 2em; animation: heartbeat 1.5s infinite; }
+        .heart:nth-child(2) { animation-delay: 0.2s; }
+        .heart:nth-child(3) { animation-delay: 0.4s; }
+
+        .couple-photos { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .couple-img {
+            width: 100px; height: 100px; border-radius: 10px; object-fit: cover;
+            border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        /* --- CAKE OVERLAY (FIXED VERSION) --- */
+        #cake-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .cake-scale-wrapper {
+            transform: scale(2.0); /* ปรับขนาดเค้กตรงนี้ */
+            margin-bottom: 50px;
+            position: relative;
+            /* Debugging: border: 1px solid red; */
+            height: 150px;
+            width: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        /* กล่องรวมเค้ก */
+        .cake-container {
+            position: relative; 
+            width: 150px; 
+            height: 100px;
+            animation: popIn 0.8s;
+        }
+        
+        /* 1. ตัวเค้ก (Body) */
+        .cake-body {
+            position: absolute; 
+            bottom: 0; 
+            left: 50%; 
+            transform: translateX(-50%); /* จัดกึ่งกลางแนวนอน */
+            width: 150px; 
+            height: 80px;
+            background-color: #fce4ec; /* สีเนื้อเค้ก */
+            border-radius: 0 0 50% 50% / 0 0 20px 20px; /* โค้งมนด้านล่าง */
+            box-shadow: 
+                inset -10px 0 20px rgba(0,0,0,0.05), /* เงาด้านใน */
+                0 5px 10px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+
+        /* 2. หน้าเค้ก (Icing Top) */
+        .cake-top {
+            position: absolute;
+            top: 0; /* ติดด้านบนของ container ซึ่งตรงกับขอบบน cake-body พอดี */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 154px; /* กว้างกว่าตัวนิดนึงให้ดูนูนออกมา */
+            height: 40px; /* ความสูงของวงรี */
+            background-color: #ff80ab; /* สีหน้าเค้กเข้ม */
+            border-radius: 50%; /* ทำเป็นวงรี */
+            z-index: 3;
+            box-shadow: inset -5px -2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 3. เลเยอร์ครีมตรงกลาง (Optional Decoration) */
+        .cake-middle-cream {
+            position: absolute;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 10px;
+            background-color: #ff80ab;
+            opacity: 0.5;
+            z-index: 1;
+            box-shadow: 0 0 5px #ff80ab;
+        }
+
+        /* 4. เชอร์รี่ */
+        .cherry {
+            position: absolute; 
+            top: 5px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            width: 20px; height: 20px; 
+            background: radial-gradient(circle at 30% 30%, #ff5252, #c62828);
+            border-radius: 50%; 
+            z-index: 10;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        /* 5. เทียน (Candles Container) */
+        .candles-container {
+            position: absolute;
+            top: -25px; /* ดันขึ้นไปอยู่บนหน้าเค้ก */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 40px;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* ระยะห่างระหว่างเทียน */
+        }
+
+        .candle {
+            position: relative;
+            width: 8px; 
+            height: 35px;
+            background: repeating-linear-gradient(45deg, #fff, #fff 5px, #74b9ff 5px, #74b9ff 10px);
+            border-radius: 2px;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* ทำให้เทียนเอียงนิดๆ */
+        .candle:nth-child(1) { transform: rotate(-10deg); margin-top: 5px; }
+        .candle:nth-child(2) { transform: translateY(-5px); z-index: 11; } /* เทียนกลางอยู่สูงและหน้าสุด */
+        .candle:nth-child(3) { transform: rotate(10deg); margin-top: 5px; }
+        
+        /* เปลวไฟ */
+        .flame {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            width: 10px; height: 14px;
+            background: radial-gradient(ellipse at bottom, #ffeb3b 0%, #ff9800 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.5s infinite alternate;
+            box-shadow: 0 0 10px #ffeb3b;
+            z-index: 6;
+        }
+        
+        .smoke {
+            position: absolute; top: -25px; left: 50%; transform: translateX(-50%);
+            font-size: 20px; color: #aaa; opacity: 0; pointer-events: none;
+        }
+        
+        @keyframes flicker { 0% { transform: translateX(-50%) scale(1); } 100% { transform: translateX(-50%) scale(1.1) rotate(2deg); } }
+        @keyframes smokeFloat { 0% { opacity: 0.8; transform: translateX(-50%) translateY(0); } 100% { opacity: 0; transform: translateX(-50%) translateY(-30px); } }
+
+        /* ข้อความ HBD แบบพิเศษ */
+        .hbd-pop-text {
+            font-family: 'Mali', cursive;
+            font-size: 3em; 
+            font-weight: 800;
+            color: #fff; 
+            text-align: center;
+            -webkit-text-stroke: 2px #ff6b6b;
+            text-shadow: 3px 3px 0px #ff9999, 0 0 20px rgba(255,255,255,0.8);
+            animation: textWiggle 2s ease-in-out infinite;
+            display: none;
+            margin-top: 20px;
+            z-index: 10000;
+        }
+
+        @keyframes textWiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .btn-action-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn-action-cake {
+            background-color: #81ecec !important; 
+            color: #2d3436; 
+            font-weight: bold;
+            margin-top: 0 !important;
+        }
+        .btn-open-gift {
+            margin-top: 0 !important;
+        }
+        
+        .btn-blow {
+            background-color: #ff7675 !important;
+            font-size: 1.5em !important;
+            padding: 15px 40px !important;
+            box-shadow: 0 0 20px rgba(255, 118, 117, 0.6) !important;
+            animation: pulse 1s infinite;
+        }
+        .btn-close-cake {
+            margin-top: 20px;
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            font-size: 1em;
+            display: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+        .btn-close-cake:hover { background: rgba(255,255,255,0.2); }
+
+        /* --- Buttons --- */
+        button {
+            background-color: #ff6b6b; color: white; border: none;
+            padding: 12px 25px; font-size: 1.1em; border-radius: 50px;
+            cursor: pointer; font-family: 'Kanit', sans-serif;
+            transition: all 0.2s; margin-top: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; z-index: 20;
+        }
+        button:hover { transform: scale(1.05); background-color: #ff4757; }
+        .next-btn { background-color: #feca57; color: #5a5a5a; font-weight: bold; animation: bounce 2s infinite; }
+
+        /* --- Page 2 Gallery --- */
+        .gallery-grid {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;
+            width: 100%; max-width: 1000px; padding: 30px;
+            background: rgba(255,255,255,0.7); border-radius: 20px;
+            margin-bottom: 30px; backdrop-filter: blur(5px);
+        }
+        .polaroid {
+            background: white; padding: 10px 10px 35px 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-radius: 4px;
+            transition: transform 0.3s; width: 160px; height: auto; transform: none !important; margin: 0;
+        }
+        .polaroid:hover { transform: scale(1.05) !important; z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .polaroid img { width: 100%; height: 160px; object-fit: cover; border: 1px solid #eee; display: block; }
+        .gallery-caption {
+            font-family: 'Mali', cursive; color: #ff6b6b; font-size: 1.5em;
+            background: white; padding: 15px 30px; border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-top: 20px;
+            display: inline-block; text-align: center; position: relative; z-index: 20;
+        }
+
+        /* --- Password Feature --- */
+        #password-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 230, 230, 0.5); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .password-box {
+            background: white; padding: 40px; border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center;
+            border: 5px solid #ff9999; animation: popIn 0.5s;
+        }
+        .password-box input {
+            padding: 15px; font-size: 1.2em; border: 2px solid #ddd;
+            border-radius: 10px; margin: 20px 0; width: 200px;
+            text-align: center; font-family: 'Kanit', sans-serif; outline: none;
+        }
+        .password-box input:focus { border-color: #ff6b6b; }
+        .blur-content { filter: blur(15px); pointer-events: none; user-select: none; transition: filter 0.8s ease; }
+        .unblur { filter: blur(0) !important; pointer-events: auto !important; user-select: auto !important; }
+
+        /* --- Page 3 & 4 Styles --- */
+        .gift-container { display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fadeIn 1s; }
+        .bow-btn {
+            background-color: #d63031; color: white; font-size: 1.8em; padding: 20px 50px;
+            border: 3px solid #fff; box-shadow: 0 0 0 5px #d63031, 0 10px 20px rgba(0,0,0,0.3);
+            border-radius: 20px; font-family: 'Mali', cursive; animation: pulse 1.5s infinite; position: relative;
+        }
+        .bow-btn::before { content: '🎀'; font-size: 1.5em; margin-right: 10px; }
+        .bow-btn::after { content: '🎀'; font-size: 1.5em; margin-left: 10px; }
+        #final-reveal {
+            display: none; flex-direction: column; align-items: center; animation: popIn 0.8s;
+            background: white; padding: 30px; border-radius: 20px; border: 5px solid #ff6b6b;
+            max-width: 90%; width: 500px;
+        }
+        .big-final-img { width: 100%; height: auto; max-height: 400px; object-fit: cover; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        .final-msg { font-size: 1.5em; color: #ff6b6b; font-family: 'Mali', cursive; line-height: 1.6; }
+        
+        .evolution-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; max-width: 900px; }
+        .evo-item { display: flex; flex-direction: column; align-items: center; background: white; padding: 10px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .evo-item:hover { transform: translateY(-5px); }
+        .evo-img { width: 140px; height: 140px; object-fit: cover; border-radius: 10px; border: 3px solid #ff9999; margin-bottom: 10px; }
+        .evo-label { font-family: 'Mali', cursive; color: #5a5a5a; font-weight: bold; }
+        .arrow { font-size: 2em; color: #ff6b6b; font-weight: bold; animation: bounceRight 1s infinite; padding: 0 10px; }
+        .final-text-box {
+            background: white; padding: 30px; border-radius: 20px; border: 2px dashed #ff9999;
+            max-width: 90%; width: 600px; font-size: 1.3em; color: #5a5a5a;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; line-height: 1.8; font-family: 'Mali', cursive;
+        }
+
+        /* --- Animations --- */
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes floatUp { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-120vh) rotate(10deg); opacity: 0.8; } }
+        @keyframes bounceRight { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+
+        .sticker { position: fixed; pointer-events: none; z-index: 5; animation: float 3s ease-in-out infinite; }
+        .cat-1 { bottom: 20px; left: 20px; font-size: 60px; }
+        .cat-2 { top: 100px; right: 20px; font-size: 50px; animation-delay: 1s; }
+        .star { top: 20px; left: 20px; font-size: 40px; }
+        .flower { bottom: 50px; right: 50px; font-size: 40px; }
+        .falling-object { position: fixed; top: -10%; animation: fall linear forwards; z-index: 100; }
+        .balloon { position: fixed; bottom: -100px; width: 50px; height: 60px; background-color: #ff6b6b; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; z-index: 1; animation: floatUp linear forwards; }
+        .balloon::before { content: ''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 2px; height: 12px; background: rgba(0,0,0,0.3); }
+        #hidden-message { display: none; margin-top: 20px; animation: fadeIn 1s; }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="lovesong.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="music-controls">
+        <span style="font-size: 1.2em;">🎵</span>
+        <button class="music-btn" id="play-pause-btn" onclick="toggleMusic()">▶️</button>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5" oninput="adjustVolume(this.value)" title="ปรับระดับเสียง">
+    </div>
+    
+    <div class="sticker cat-1">🐱</div>
+    <div class="sticker cat-2">😽</div>
+    <div class="sticker star">✨</div>
+    <div class="sticker flower">🌸</div>
+
+    <div id="cake-overlay">
+        <div class="cake-scale-wrapper">
+            <div class="cake-container" id="my-cake">
+                <div class="cake-top"></div>
+                
+                <div class="cake-body"></div>
+                
+                <div class="cake-middle-cream"></div>
+
+                <div class="cherry"></div>
+
+                <div class="candles-container">
+                    <div class="candle"><div class="flame"></div></div>
+                    <div class="candle">
+                        <div class="flame"></div>
+                        <div class="smoke" id="smoke">💨</div>
+                    </div>
+                    <div class="candle"><div class="flame"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="hbd-text-effect" class="hbd-pop-text">
+            ✨ HAPPY BIRTHDAY! ✨<br>
+            <span style="font-size:0.4em; color:white; -webkit-text-stroke:0px; text-shadow:none; font-weight: 400;">(มีความสุขมากๆ น้าา)</span>
+        </div>
+
+        <button id="blow-btn" class="btn-blow" onclick="blowCandle()" style="display:none;">💨 เป่าเทียนเลย!</button>
+        <button id="close-cake-btn" class="btn-close-cake" onclick="closeCake()">กลับไปหน้าหลัก</button>
+    </div>
+
+    <div id="page-1" class="page">
+        <div class="bg-heart-container" id="bg-heart-container"></div>
+
+        <div class="container">
+            <div class="photo-frame">
+                <img src="https://images.unsplash.com/photo-1516724562728-afc824a36e84?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Pinmook">
+            </div>
+            <h1>Happy Birthday!</h1>
+            <p>สุขสันต์วันเกิดนะคนเก่ง 🎂</p>
+            <div class="hearts-container">
+                <div class="heart">❤️</div>
+                <div class="heart">💖</div>
+                <div class="heart">❤️</div>
+            </div>
+
+            <div class="btn-action-group">
+                <button id="summon-cake-btn" class="btn-action-cake" onclick="showCake()">✨ เสกเค้ก 🍰</button>
+                <button id="open-btn" class="btn-open-gift" onclick="revealMessage()">🎁 ดูของขวัญ</button>
+            </div>
+
+            <div id="hidden-message">
+                <div class="couple-photos">
+                    <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=60" class="couple-img">
+                    <img src="https://images.unsplash.com/photo-1518105570919-e342af1a8275?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=60" class="couple-img">
+                </div>
+                <h3>ถึง น้องปิ่นมุก ของซันเด</h3>
+                <p>สุขสันต์วันเกิดนะอ้วนอ้วน<br>ขอให้ยิ้มเยอะๆนะเค้ารักเธอที่สุดเลยค้าบ</p>
+                <button class="next-btn" onclick="goToPage2()">ไปดูความทรงจำของเรา 📸</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-2" class="page">
+        <div id="password-overlay">
+            <div class="password-box">
+                <h2>🔒 ความลับนะจ๊ะ!</h2>
+                <p>กรอกรหัสวันเกิดเธอก่อน (ววดดปป)</p>
+                <input type="password" id="pass-input" placeholder="เช่น 152549" maxlength="6">
+                <br>
+                <button onclick="checkPassword()">ปลดล็อค 🔓</button>
+            </div>
+        </div>
+
+        <div id="gallery-content" class="blur-content" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <h2 style="font-size: 3.5em;">Our Memories 💖</h2>
+            <div class="gallery-grid">
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1516575334481-f85287c2c82d?auto=format&fit=crop&w=300&q=60"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1621600411688-4be93cd68504?auto=format&fit=crop&w=300&q=60"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=300&q=60"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=300&q=60"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&w=300&q=60"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=60"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=60"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=60"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=300&q=60"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=300&q=60"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=60"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1531747056595-07f6cbbe10ad?auto=format&fit=crop&w=300&q=60"></div>
+            </div>
+            <div class="gallery-caption">
+                ทุกช่วงเวลาที่มีเธอ คือของขวัญที่ดีที่สุดเลย 🥰 <br>
+                <span style="font-size: 0.7em; color: #aaa;">(ซันเด ❤️ ปิ่นมุก)</span>
+            </div>
+            <button class="next-btn" onclick="goToPage3()" style="margin-top: 20px; font-size: 1.2em;">🎁 ยังมีอีกอย่างนะ กดเลย!</button>
+        </div>
+    </div>
+
+    <div id="page-3" class="page">
+        <div id="gift-box" class="gift-container">
+            <h1 style="margin-bottom: 30px;">ของขวัญชิ้นสุดท้าย...</h1>
+            <button class="bow-btn" onclick="openFinalGift()">กดเพื่อเปิด</button>
+        </div>
+        <div id="final-reveal">
+            <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="big-final-img" alt="Final Photo">
+            <div class="final-msg">
+                ขอบคุณที่เข้ามาในชีวิตเค้านะ <br>
+                รักเธอมากๆ นะครับปิ่นมุก 💖<br>
+                Happy Birthday! 🎂🎉
+            </div>
+            <button class="next-btn" onclick="goToPage4()" style="margin-top:20px; font-size:1.1em;">หน้าสุดท้ายแล้วจริงจริงง 🤣</button>
+        </div>
+    </div>
+
+    <div id="page-4" class="page">
+        <h2>Our Journey 🚀</h2>
+        <div class="evolution-container">
+            <div class="evo-item">
+                <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=60" class="evo-img">
+                <span class="evo-label">ม.4</span>
+            </div>
+            <div class="arrow">➜</div>
+            <div class="evo-item">
+                <img src="https://images.unsplash.com/photo-1518105570919-e342af1a8275?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=60" class="evo-img">
+                <span class="evo-label">ม.6</span>
+            </div>
+            <div class="arrow">➜</div>
+            <div class="evo-item">
+                <img src="https://images.unsplash.com/photo-1516575334481-f85287c2c82d?auto=format&fit=crop&w=200&q=60" class="evo-img">
+                <span class="evo-label">ปัจจุบัน</span>
+            </div>
+        </div>
+        <div class="final-text-box">
+            <p>ไม่ว่าเวลาจะผ่านไปนานแค่ไหน<br>
+            เค้าก็ยังจะอยู่ตรงนี้ข้างๆ เธอเสมอนะ<br>
+            เติบโตไปด้วยกันเรื่อยๆ นะคนเก่ง<br>
+            รักปิ่นมุกที่สุดในโลกเลยยย 🌏❤️</p>
+        </div>
+        <button onclick="location.reload()" style="margin-top:30px; background:#aaa; font-size:0.9em;">กลับไปหน้าแรก (จบแล้วจ้า)</button>
+    </div>
+
+    <script>
+        const audio = document.getElementById('bg-music');
+        const playBtn = document.getElementById('play-pause-btn');
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                playBtn.innerText = '⏸️';
+            } else {
+                audio.pause();
+                playBtn.innerText = '▶️';
+            }
+        }
+        function adjustVolume(val) { audio.volume = val; }
+
+        function revealMessage() {
+            document.getElementById('hidden-message').style.display = "block";
+            // ซ่อนปุ่มดูของขวัญเพราะกดไปแล้ว แต่ปุ่มเสกเค้กยังอยู่
+            document.getElementById('open-btn').style.display = "none";
+            createConfetti(50);
+            audio.volume = 0.5;
+            audio.play().catch(error => { console.log("Autoplay blocked"); });
+            playBtn.innerText = '⏸️';
+        }
+        
+        // --- ส่วนฟังก์ชันเค้กเป่าเทียน (แก้ไขใหม่) ---
+        function showCake() {
+            const overlay = document.getElementById('cake-overlay');
+            overlay.style.display = 'flex';
+            
+            // รีเซ็ตสถานะ
+            document.getElementById('blow-btn').style.display = 'none';
+            document.getElementById('close-cake-btn').style.display = 'none';
+            document.getElementById('hbd-text-effect').style.display = 'none';
+            
+            // รีเซ็ตเปลวไฟ
+            document.querySelectorAll('.flame').forEach(f => f.style.display = 'block');
+            const smoke = document.getElementById('smoke');
+            smoke.style.opacity = '0';
+            smoke.style.animation = 'none';
+
+            setTimeout(() => {
+                const blowBtn = document.getElementById('blow-btn');
+                blowBtn.style.display = 'block';
+                blowBtn.style.animation = 'popIn 0.5s, pulse 1s infinite';
+            }, 800);
+        }
+
+        function blowCandle() {
+            document.querySelectorAll('.flame').forEach(f => f.style.display = 'none');
+            
+            const smoke = document.getElementById('smoke');
+            smoke.style.animation = 'smokeFloat 2s forwards';
+            
+            document.getElementById('blow-btn').style.display = 'none';
+
+            const hbdText = document.getElementById('hbd-text-effect');
+            hbdText.style.display = 'block';
+            hbdText.style.animation = 'popIn 0.5s, textWiggle 2s ease-in-out infinite';
+
+            setTimeout(() => {
+                const closeBtn = document.getElementById('close-cake-btn');
+                closeBtn.style.display = 'block';
+                closeBtn.style.animation = 'fadeIn 1s';
+            }, 1500);
+
+            createConfetti(100);
+            createHeartRain();
+            
+            if (audio.paused) {
+                toggleMusic();
+            }
+        }
+
+        function closeCake() {
+            document.getElementById('cake-overlay').style.display = 'none';
+        }
+        // ------------------------------------
+
+        function goToPage2() {
+            document.getElementById('page-1').style.display = 'none';
+            document.getElementById('page-2').style.display = 'flex';
+            window.scrollTo(0, 0);
+             for(let i=0; i<10; i++) { setTimeout(createBalloon, i * 400); }
+        }
+
+        function checkPassword() {
+            var input = document.getElementById('pass-input').value;
+            if (input === '152549') {
+                document.getElementById('password-overlay').style.display = 'none';
+                var content = document.getElementById('gallery-content');
+                content.classList.remove('blur-content');
+                content.classList.add('unblur'); 
+                createConfetti(50);
+                startCelebration();
+            } else {
+                alert('รหัสผิดจ้า! ลองใส่วันเกิดเธอสิ (เช่น 152549) 😜');
+                document.getElementById('pass-input').value = '';
+            }
+        }
+
+        function goToPage3() {
+            document.getElementById('page-2').style.display = 'none';
+            document.getElementById('page-3').style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+
+        function goToPage4() {
+            document.getElementById('page-3').style.display = 'none';
+            document.getElementById('page-4').style.display = 'flex';
+            window.scrollTo(0, 0);
+            createConfetti(50);
+        }
+
+        function openFinalGift() {
+            document.getElementById('gift-box').style.display = 'none';
+            document.getElementById('final-reveal').style.display = 'flex';
+            let count = 0;
+            const burst = setInterval(() => { createConfetti(50); count++; if(count > 5) clearInterval(burst); }, 300);
+            createHeartRain();
+        }
+
+        function startCelebration() {
+            for(let i=0; i<15; i++) { setTimeout(createBalloon, i * 400); }
+            createHeartRain();
+        }
+
+        function createBalloon() {
+            const balloon = document.createElement('div');
+            balloon.classList.add('balloon');
+            balloon.style.left = Math.random() * 90 + 5 + 'vw';
+            const colors = ['#ff6b6b', '#ff9ff3', '#feca57', '#48dbfb'];
+            balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            balloon.style.animationDuration = (Math.random() * 5 + 5) + 's'; 
+            document.body.appendChild(balloon);
+            setTimeout(() => { balloon.remove(); }, 10000);
+        }
+
+        function createConfetti(amount) {
+            const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff'];
+            for (let i = 0; i < amount; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('falling-object');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = confetti.style.width;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animation = `fall ${Math.random() * 2 + 2}s linear forwards`;
+                document.body.appendChild(confetti);
+                setTimeout(() => { confetti.remove(); }, 4000);
+            }
+        }
+
+        function createHeartRain() {
+            const heartSymbols = ['❤️', '💖', '💕', '🥰', '🐱'];
+            for (let i = 0; i < 30; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('falling-object');
+                heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                document.body.appendChild(heart);
+            }
+        }
+
+        function initBackgroundHearts() {
+            const container = document.getElementById('bg-heart-container');
+            const heartCount = 20; 
+            for(let i=0; i<heartCount; i++){
+                const heart = document.createElement('div');
+                heart.classList.add('bg-heart');
+                heart.innerText = Math.random() > 0.5 ? '❤️' : '💖';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = Math.random() * 20 + 20 + 'px'; 
+                heart.style.animationDuration = Math.random() * 10 + 10 + 's'; 
+                heart.style.animationDelay = Math.random() * 10 + 's'; 
+                container.appendChild(heart);
+            }
+        }
+        
+        initBackgroundHearts();
+    </script>
+
+</body>
+</html>
